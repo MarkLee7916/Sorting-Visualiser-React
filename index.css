@@ -1,0 +1,68 @@
+#app {
+  font-family: Helvetica-Neue, sans-serif;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+}
+
+header {
+  background: black;
+  text-align: center;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+header::before,
+header::after {
+  content: " ";
+  display: table;
+  clear: both;
+}
+
+#menu {
+  display: flex;
+  justify-content: space-around;
+}
+
+.menu-text {
+  font-size: 16px;
+  color: white;
+}
+
+.menu-button {
+  border: none;
+  background-color: black;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.empty-menu-button {
+  border: none;
+  background-color: black;
+  font-size: 16px;
+  color: black;
+  outline: none;
+}
+
+.menu-button:hover {
+  opacity: 0.5;
+}
+
+.bar {
+  width: 10px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.array {
+  display: flex;
+  margin: auto;
+  justify-content: space-around;
+}
