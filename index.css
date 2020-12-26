@@ -66,3 +66,7 @@ header::after {
   margin: auto;
   justify-content: space-around;
 }
+
+label {
+  padding-right: 10px;
+}

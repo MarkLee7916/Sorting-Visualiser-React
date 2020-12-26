@@ -1,3 +1,7 @@
+// Helps us improve UI for different screen sizes
+export const isWidescreen = window.matchMedia("(min-width: 992px)").matches;
+
+// Return random integer betwee lower (inclusive) and upper (non-inclusive)
 export function randomIntBetween(lower: number, upper: number) {
   return Math.floor(Math.random() * (upper - lower)) + lower;
 }
@@ -11,24 +15,37 @@ export function swap<T>(arr: T[], i: number, j: number) {
 
 // Create a delay for the specified amount of time in millis
 export function wait(delayTime: number): Promise<void> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, delayTime);
   });
 }
 
-export function range(lower: number, upper: number, step=(x: number) => x + 1) {
-    const array = [];
+// Return a sorted list with range lower -> upper, with a function to specify the step
+export function range(
+  lower: number,
+  upper: number,
+  step = (x: number) => x + 1
+) {
+  const array = [];
 
-    while (lower < upper) {
-        array.push(lower);
-        lower = step(lower);
-    }
+  while (lower < upper) {
+    array.push(lower);
+    lower = step(lower);
+  }
 
-    return array;
+  return array;
 }
 
 export function max(arr: number[]) {
   return arr.reduce((currMax, elem) => Math.max(currMax, elem), 0);
+}
+
+// Return a shuffled array with range MIN_ARRAY_LEN -> MAX_ARRAY_LEN
+export function randomArray(lowerLimit: number, upperLimit: number): number[] {
+  const length = randomIntBetween(lowerLimit, upperLimit);
+  const array = range(0, length);
+
+  return shuffle(array);
 }
 
 export function shuffle<T>(arr: T[]) {
@@ -54,3 +71,6 @@ export function isSorted(arr: number[]) {
   return true;
 }
 
+export function flatten<T>(arr: T[]) {
+  return arr.reduce((acc, elem) => acc.concat(elem), []);
+}

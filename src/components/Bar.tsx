@@ -1,5 +1,5 @@
 import React from "react";
-import { isWidescreen } from "../constants";
+import { isWidescreen } from "../utils";
 
 interface Props {
   value: number;

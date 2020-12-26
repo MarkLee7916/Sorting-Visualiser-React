@@ -3,8 +3,7 @@ import { insertionSort } from "../sortingAlgorithms/insertionSort";
 import { quickSort } from "../sortingAlgorithms/quickSort";
 import { heapSort } from "../sortingAlgorithms/heapSort";
 import { selectionSort } from "../sortingAlgorithms/selectionSort";
-import { randomIntBetween, wait, shuffle, range, isSorted } from "../utils";
-import { v4 as generateUniqueKey } from "uuid";
+import { wait, isSorted, randomArray } from "../utils";
 import { Bar } from "./Bar";
 import { Menu } from "./Menu";
 import { bubbleSort } from "../sortingAlgorithms/bubbleSort";
@@ -19,97 +18,119 @@ const MAX_ARRAY_LEN = 150;
 type Algo = (arr: number[]) => ArrayState[];
 
 export const SortingVisualiser = () => {
-    const [array, newArray] = useState({ swappedIndices: [null, null], currArray: randomArray() });
-    const [currSortingAlgo, newSortingAlgo] = useState("insertion-sort");
-    const [running, setRunning] = useState(false);
+  // Internal representation of the array we're sorting displayed on the screen
+  const [array, newArray] = useState(generateArray());
 
-    const algoRepresentations = new Map<string, Algo>([
-        ["insertion-sort", insertionSort],
-        ["quick-sort", quickSort],
-        ["heap-sort", heapSort],
-        ["selection-sort", selectionSort],
-        ["bubble-sort", bubbleSort],
-        ["merge-sort", mergeSort],
-        ["counting-sort", countingSort],
-        ["shuffle", fisherYates]
-    ]);
+  // Holds a string representation of the current algorithm user has selected
+  const [currSortingAlgo, newSortingAlgo] = useState("insertion-sort");
 
-    const relativeDelays = new Map<string, number>([
-        ["insertion-sort", 0],
-        ["bubble-sort", 0],
-        ["heap-sort", 0],
-        ["quick-sort", 10],
-        ["counting-sort", 10],
-        ["shuffle", 20],
-        ["selection-sort", 30], 
-        ["merge-sort", 100]
-    ]);
+  // A flag that is true if an algorithm is currently running, otherwise false
+  const [running, setRunning] = useState(false);
 
-    function randomArray(): number[] {
-        const length = randomIntBetween(MIN_ARRAY_LEN, MAX_ARRAY_LEN);
-        const array = range(0, length);
+  // User controlled multiplier for delays where lower delays mean faster animations
+  const [delayMultiplier, newDelayMultiplier] = useState(1);
 
-        return shuffle(array);
+  // Maps the string representation of an algorithm to its implementation
+  const algoRepresentations = new Map<string, Algo>([
+    ["insertion-sort", insertionSort],
+    ["quick-sort", quickSort],
+    ["heap-sort", heapSort],
+    ["selection-sort", selectionSort],
+    ["bubble-sort", bubbleSort],
+    ["merge-sort", mergeSort],
+    ["counting-sort", countingSort],
+    ["shuffle", fisherYates],
+  ]);
+
+  // Some algorithms run faster than others, so this map stores a different delay value for each algo
+  // Where a lower delay value means a faster animation
+  const relativeDelays = new Map<string, number>([
+    ["insertion-sort", 1],
+    ["bubble-sort", 1],
+    ["heap-sort", 5],
+    ["counting-sort", 20],
+    ["quick-sort", 50],
+    ["shuffle", 50],
+    ["selection-sort", 50],
+    ["merge-sort", 100],
+  ]);
+
+  // Wrapper around newSortingAlgo hook to pass into the Menu component
+  function updateSortingAlgo(algo: string) {
+    newSortingAlgo(algo);
+  }
+
+  // Wrapper around newDelayMultiplier hook to pass into the Menu component
+  function updateDelayMultiplier(updatedDelayMultiplier: number) {
+    newDelayMultiplier(updatedDelayMultiplier);
+  }
+
+  // Generate an array object
+  function generateArray() {
+    const array = randomArray(MIN_ARRAY_LEN, MAX_ARRAY_LEN);
+    const swappedIndices = [null, null];
+
+    return { currArray: array, swappedIndices: swappedIndices };
+  }
+
+  // Generate array and update array state
+  function createNewArray() {
+    newArray(generateArray());
+  }
+
+  // Animate the current sorting algorithm the user has selected
+  function renderSortingAlgo() {
+    if (isSorted(array.currArray)) {
+      alert("Array already sorted!");
+    } else {
+      renderAlgo(currSortingAlgo);
+    }
+  }
+
+  // Animate the main shuffling algorithm
+  function renderShufflingAlgo() {
+    renderAlgo("shuffle");
+  }
+
+  // Animate the algorithm string represntation passed as a parameter
+  async function renderAlgo(algoStr: string) {
+    const algo = algoRepresentations.get(algoStr);
+    const delay = relativeDelays.get(algoStr);
+    const states = algo(array.currArray);
+
+    for (let i = 0; i < states.length; i++) {
+      await wait(delay * (1 / delayMultiplier));
+
+      newArray(states[i]);
+
+      setRunning(true);
     }
 
-    function updateSortingAlgo(algo: string) {
-        newSortingAlgo(algo);
-    }
+    setRunning(false);
+  }
 
-    function createNewArray() {
-        newArray({
-            swappedIndices: [null, null],
-            currArray: randomArray(),
-        });
-    }
-
-    function renderSortingAlgo() {
-        if (!isSorted(array.currArray)) {
-            renderAlgo(currSortingAlgo);
-        }
-    }
-
-    function renderShufflingAlgo() {
-        renderAlgo("shuffle");
-    }
-
-    async function renderAlgo(algoStr: string) {
-        const algo = algoRepresentations.get(algoStr);
-        const delay = relativeDelays.get(algoStr);
-        const states = algo(array.currArray);
-
-        for (let i = 0; i < states.length; i++) {
-            await wait(delay);
-
-            newArray(states[i]);
-
-            // For some reason, UI has weird bugs if you put this above the for loop
-            setRunning(true);
-        }
-
-        setRunning(false);
-    }
-
-    return (
-        <>
-            <Menu
-                initialSortingAlgo={currSortingAlgo}
-                running={running}
-                sort={renderSortingAlgo}
-                shuffle={renderShufflingAlgo}
-                updateSortingAlgo={updateSortingAlgo}
-                createNewArray={createNewArray}
-            />
-            <div className="array">
-                {array.currArray.map((elem, index) => (
-                    <Bar
-                        value={elem}
-                        isSwapped={array.swappedIndices.includes(index)}
-                        isSorted={isSorted(array.currArray)}
-                        key={generateUniqueKey()}
-                    />
-                ))}
-            </div>
-        </>
-    );
+  return (
+    <>
+      <Menu
+        initialSortingAlgo={currSortingAlgo}
+        running={running}
+        sort={renderSortingAlgo}
+        shuffle={renderShufflingAlgo}
+        updateSortingAlgo={updateSortingAlgo}
+        createNewArray={createNewArray}
+        delayMultiplier={delayMultiplier}
+        updateDelayMultiplier={updateDelayMultiplier}
+      />
+      <div className="array">
+        {array.currArray.map((elem, index) => (
+          <Bar
+            value={elem}
+            isSwapped={array.swappedIndices.includes(index)}
+            isSorted={isSorted(array.currArray)}
+            key={elem}
+          />
+        ))}
+      </div>
+    </>
+  );
 };

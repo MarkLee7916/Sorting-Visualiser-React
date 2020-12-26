@@ -4,14 +4,13 @@
   "description": "Visualising Sorting Algorithms",
   "main": "index.js",
   "scripts": {
-    "start": "tsc src/sortingAlgorithms/countingSort.ts src/sortingAlgorithms/mergesort.ts src/components/Menu.tsx src/constants.ts src/sortingAlgorithms/insertionSort.ts src/components/App.tsx src/components/Bar.tsx src/components/SortingVisualiser.tsx src/utils.ts --jsx react --esModuleInterop --watch --outdir compiledJS",
-    "test": "watchify compiledJS/sortingAlgorithms/countingSort.js compiledJS/sortingAlgorithms/mergesort.js compiledJS/components/Menu.js compiledJS/constants.js compiledJS/sortingAlgorithms/insertionSort.js compiledJS/components/App.js compiledJS/components/Bar.js compiledJS/components/SortingVisualiser.js compiledJS/utils.js -o bundledJS/bundle.js",
-    "build": "browserify compiledJS/sortingAlgorithms/countingSort.js compiledJS/sortingAlgorithms/mergesort.js compiledJS/components/Menu.js compiledJS/constants.js compiledJS/sortingAlgorithms/insertionSort.js compiledJS/components/App.js compiledJS/components/Bar.js compiledJS/components/SortingVisualiser.js compiledJS/utils.js -g [ envify --NODE_ENV production ] -g uglifyify | terser --compress --mangle > productionJS/bundle.js"
+    "start": "tsc src/sortingAlgorithms/countingSort.ts src/sortingAlgorithms/mergesort.ts src/components/Menu.tsx src/sortingAlgorithms/insertionSort.ts src/components/App.tsx src/components/Bar.tsx src/components/SortingVisualiser.tsx src/utils.ts --jsx react --esModuleInterop --watch --outdir compiledJS",
+    "test": "watchify compiledJS/sortingAlgorithms/countingSort.js compiledJS/sortingAlgorithms/mergesort.js compiledJS/components/Menu.js compiledJS/sortingAlgorithms/insertionSort.js compiledJS/components/App.js compiledJS/components/Bar.js compiledJS/components/SortingVisualiser.js compiledJS/utils.js -o bundledJS/bundle.js",
+    "build": "browserify compiledJS/sortingAlgorithms/countingSort.js compiledJS/sortingAlgorithms/mergesort.js compiledJS/components/Menu.js compiledJS/sortingAlgorithms/insertionSort.js compiledJS/components/App.js compiledJS/components/Bar.js compiledJS/components/SortingVisualiser.js compiledJS/utils.js -g [ envify --NODE_ENV production ] -g uglifyify | terser --compress --mangle > productionJS/bundle.js"
   },
   "dependencies": {
     "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "uuid": "^8.3.2"
+    "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
