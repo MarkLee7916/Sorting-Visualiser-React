@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { insertionSort } from "../sortingAlgorithms/insertionSort";
 import { quickSort } from "../sortingAlgorithms/quickSort";
 import { heapSort } from "../sortingAlgorithms/heapSort";
@@ -11,6 +11,7 @@ import { fisherYates } from "../shufflingAlgorithms/fisherYates";
 import { mergeSort } from "../sortingAlgorithms/mergeSort";
 import { ArrayState } from "../arrayState";
 import { countingSort } from "../sortingAlgorithms/countingSort";
+import { Modal } from "./Modal";
 
 const MIN_ARRAY_LEN = 100;
 const MAX_ARRAY_LEN = 150;
@@ -22,13 +23,15 @@ export const SortingVisualiser = () => {
   const [array, newArray] = useState(generateArray());
 
   // Holds a string representation of the current algorithm user has selected
-  const [currSortingAlgo, newSortingAlgo] = useState("insertion-sort");
+  const sortingAlgo = useRef("insertion-sort");
+
+  // User controlled multiplier for delays where lower delays mean faster animations
+  const delayMultiplier = useRef(1);
 
   // A flag that is true if an algorithm is currently running, otherwise false
   const [running, setRunning] = useState(false);
 
-  // User controlled multiplier for delays where lower delays mean faster animations
-  const [delayMultiplier, newDelayMultiplier] = useState(1);
+  const [isModalDisplayed, setModalDisplayed] = useState(false);
 
   // Maps the string representation of an algorithm to its implementation
   const algoRepresentations = new Map<string, Algo>([
@@ -43,7 +46,6 @@ export const SortingVisualiser = () => {
   ]);
 
   // Some algorithms run faster than others, so this map stores a different delay value for each algo
-  // Where a lower delay value means a faster animation
   const relativeDelays = new Map<string, number>([
     ["insertion-sort", 1],
     ["bubble-sort", 1],
@@ -55,14 +57,16 @@ export const SortingVisualiser = () => {
     ["merge-sort", 100],
   ]);
 
+  const pageOpacity = isModalDisplayed ? "0.2" : "1.0";
+
   // Wrapper around newSortingAlgo hook to pass into the Menu component
   function updateSortingAlgo(algo: string) {
-    newSortingAlgo(algo);
+    sortingAlgo.current = algo;
   }
 
   // Wrapper around newDelayMultiplier hook to pass into the Menu component
   function updateDelayMultiplier(updatedDelayMultiplier: number) {
-    newDelayMultiplier(updatedDelayMultiplier);
+    delayMultiplier.current = updatedDelayMultiplier;
   }
 
   // Generate an array object
@@ -81,9 +85,9 @@ export const SortingVisualiser = () => {
   // Animate the current sorting algorithm the user has selected
   function renderSortingAlgo() {
     if (isSorted(array.currArray)) {
-      alert("Array already sorted!");
+      setModalDisplayed(true);
     } else {
-      renderAlgo(currSortingAlgo);
+      renderAlgo(sortingAlgo.current);
     }
   }
 
@@ -99,7 +103,7 @@ export const SortingVisualiser = () => {
     const states = algo(array.currArray);
 
     for (let i = 0; i < states.length; i++) {
-      await wait(delay * (1 / delayMultiplier));
+      await wait(delay * (1 / delayMultiplier.current));
 
       newArray(states[i]);
 
@@ -111,26 +115,27 @@ export const SortingVisualiser = () => {
 
   return (
     <>
-      <Menu
-        initialSortingAlgo={currSortingAlgo}
-        running={running}
-        sort={renderSortingAlgo}
-        shuffle={renderShufflingAlgo}
-        updateSortingAlgo={updateSortingAlgo}
-        createNewArray={createNewArray}
-        delayMultiplier={delayMultiplier}
-        updateDelayMultiplier={updateDelayMultiplier}
-      />
-      <div className="array">
-        {array.currArray.map((elem, index) => (
-          <Bar
-            value={elem}
-            isSwapped={array.swappedIndices.includes(index)}
-            isSorted={isSorted(array.currArray)}
-            key={elem}
-          />
-        ))}
+      <div id="page" style={{ opacity: pageOpacity }}>
+        <Menu
+          running={running}
+          sort={renderSortingAlgo}
+          shuffle={renderShufflingAlgo}
+          updateSortingAlgo={updateSortingAlgo}
+          createNewArray={createNewArray}
+          updateDelayMultiplier={updateDelayMultiplier}
+        />
+        <div className="array">
+          {array.currArray.map((elem, index) => (
+            <Bar
+              value={elem}
+              isSwapped={array.swappedIndices.includes(index)}
+              isSorted={isSorted(array.currArray)}
+              key={elem}
+            />
+          ))}
+        </div>
       </div>
+      <Modal isVisible={isModalDisplayed} hide={() => setModalDisplayed(false)} />
     </>
   );
 };

@@ -48,5 +48,5 @@ function merge(
     arr[lowerBound + i] = item;
   });
 
-  arrayStates.push({ swappedIndices: [null, null], currArray: arr.slice() });
+  arrayStates.push({ swappedIndices: [lowerBound, upperBound], currArray: arr.slice() });
 }

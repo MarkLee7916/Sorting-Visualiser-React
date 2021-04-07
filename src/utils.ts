@@ -1,6 +1,3 @@
-// Helps us improve UI for different screen sizes
-export const isWidescreen = window.matchMedia("(min-width: 992px)").matches;
-
 // Return random integer betwee lower (inclusive) and upper (non-inclusive)
 export function randomIntBetween(lower: number, upper: number) {
   return Math.floor(Math.random() * (upper - lower)) + lower;

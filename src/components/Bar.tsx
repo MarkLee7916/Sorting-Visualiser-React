@@ -1,5 +1,4 @@
 import React from "react";
-import { isWidescreen } from "../utils";
 
 interface Props {
   value: number;
@@ -7,7 +6,7 @@ interface Props {
   isSorted: boolean;
 }
 
-const HEIGHT_MULTIPLIER = isWidescreen ? 4.5 : 9;
+const HEIGHT_MULTIPLIER = window.innerHeight / 170;
 const DEFAULT_COLOR = "rgb(127,219,255)";
 const SWAP_COLOR = "rgb(255, 111, 97)";
 const SORTED_COLOR = "rgb(0,255,127)";

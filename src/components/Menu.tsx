@@ -1,58 +1,40 @@
 import React from "react";
 
 interface Props {
-  initialSortingAlgo: string;
   running: boolean;
   sort: () => void;
   shuffle: () => void;
   updateSortingAlgo: (str: string) => void;
   createNewArray: () => void;
-  delayMultiplier: number;
   updateDelayMultiplier: (delayMultiplier: number) => void;
 }
 
 export const Menu = ({
-  initialSortingAlgo,
   running,
   sort,
   shuffle,
   updateSortingAlgo,
   createNewArray,
-  delayMultiplier,
   updateDelayMultiplier,
 }: Props) => {
-  
+
+  const runningVisibility = running ? "hidden" : "visible";
+
   function handleUpdateSortingAlgo(event) {
     updateSortingAlgo(event.target.value);
   }
 
   function handleUpdateDelayMultiplier(event) {
-    const delayMultiplierString: string = event.target.value;
-    const delayMultiplier = delayMultiplierString.slice(
-      1,
-      delayMultiplierString.length
-    );
+    const delayMultiplier: string = event.target.value;
 
-    updateDelayMultiplier(JSON.parse(delayMultiplier));
+    updateDelayMultiplier(parseFloat(delayMultiplier));
   }
 
-  // Renders the same menu as default, but with all options removed
-  const emptyNavBar = (
-    <header>
-      <nav>
-        <ul id="menu">
-          <button className="empty-menu-button">-</button>
-        </ul>
-      </nav>
-    </header>
-  );
-
-  const menuNavBar = (
+  return (
     <header>
       <nav>
         <ul id="menu">
           <select
-            value={initialSortingAlgo}
             className="menu-button"
             onChange={handleUpdateSortingAlgo}
           >
@@ -64,40 +46,37 @@ export const Menu = ({
             <option value="merge-sort">Merge Sort</option>
             <option value="counting-sort">Counting Sort</option>
           </select>
-          <div>
+
+          <div style={{ visibility: runningVisibility }}>
             <label htmlFor="select-speed" className="menu-text">
               Toggle Speed:
             </label>
+
             <select
               id="select-speed"
-              value={"x" + delayMultiplier.toFixed(1)}
               className="menu-button"
               onChange={handleUpdateDelayMultiplier}
             >
-              <option value="x0.1">x0.1</option>
-              <option value="x0.5">x0.5</option>
-              <option value="x1.0">x1.0</option>
-              <option value="x1.5">x1.5</option>
+              <option value="1.0">x1.0</option>
+              <option value="0.5">x0.5</option>
+              <option value="0.25">x0.25</option>
+              <option value="0.1">x0.1</option>
             </select>
           </div>
-          <button className="menu-button" onClick={sort}>
+
+          <button className="menu-button" onClick={sort} style={{ visibility: runningVisibility }}>
             Sort
           </button>
-          <button className="menu-button" onClick={shuffle}>
+
+          <button className="menu-button" onClick={shuffle} style={{ visibility: runningVisibility }}>
             Shuffle
           </button>
-          <button className="menu-button" onClick={createNewArray}>
+
+          <button className="menu-button" onClick={createNewArray} style={{ visibility: runningVisibility }}>
             Create New Array
           </button>
         </ul>
       </nav>
     </header>
   );
-
-  // We only want the user to access the menu when there's no animations running
-  if (running) {
-    return emptyNavBar;
-  } else {
-    return menuNavBar;
-  }
 };
